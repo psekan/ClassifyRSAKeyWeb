@@ -1,0 +1,47 @@
+body {
+    padding: 0 0 30px;
+}
+
+.clickAble {
+    cursor:pointer;
+}
+
+.hexFormat {
+    color: #666;
+    font-style: italic;
+    font-family: monospace;
+    word-spacing: -3px;
+}
+
+.panel-body.panel-full {
+    padding: 0;
+}
+
+.panel-body.panel-full table {
+    margin: 0;
+}
+
+.fixed_headers {
+    table-layout: fixed;
+}
+
+.fixed_headers thead tr {
+    display: block;
+}
+
+.fixed_headers tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: visible;
+    height: 300px;
+}
+
+.table.borderless>tbody>tr>td,
+.table.borderless>tbody>tr>th,
+.table.borderless>tfoot>tr>td,
+.table.borderless>tfoot>tr>th,
+.table.borderless>thead>tr>td,
+.table.borderless>thead>tr>th {
+    border: none;
+    padding: 1px;
+}
