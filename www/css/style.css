@@ -1,0 +1,72 @@
+body {
+    min-height: 75rem;
+    padding-top: 4.5rem;
+}
+
+.navbar {
+    border-bottom: 1px solid #ced4da;
+}
+
+.navbar-logo img {
+    display: inline-block;
+    width: 36px;
+    margin-top: -8px;
+}
+
+.navbar-collapse a {
+    width: 100%;
+    text-align: right;
+}
+
+.mail-link {
+    margin-top: -21px;
+    padding: 1px 6px;
+}
+
+.row-margin {
+    margin: 2em 0;
+}
+
+.clickAble {
+    cursor:pointer;
+}
+
+.hexFormat {
+    color: #666;
+    font-style: italic;
+    font-family: monospace;
+    word-spacing: -3px;
+}
+
+.panel-body.panel-full {
+    padding: 0;
+}
+
+.panel-body.panel-full table {
+    margin: 0;
+}
+
+.fixed_headers {
+    table-layout: fixed;
+}
+
+.fixed_headers thead tr {
+    display: block;
+}
+
+.fixed_headers tbody {
+    display: block;
+    overflow-y: scroll;
+    overflow-x: visible;
+    height: 300px;
+}
+
+.table.borderless>tbody>tr>td,
+.table.borderless>tbody>tr>th,
+.table.borderless>tfoot>tr>td,
+.table.borderless>tfoot>tr>th,
+.table.borderless>thead>tr>td,
+.table.borderless>thead>tr>th {
+    border: none;
+    padding: 1px;
+}

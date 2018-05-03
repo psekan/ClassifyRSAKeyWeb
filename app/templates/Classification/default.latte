@@ -1,0 +1,57 @@
+{block content}
+
+{*How to use this tool*}
+{include 'blocks/how-to-use-tool.latte'}
+
+<div class="row">
+    {*Form for keys*}
+    <div class="col-md-6">
+        <h2>Test your keys</h2>
+        <form action="" method="post" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label for="keys" class="control-label">ASCII armored RSA key(s) or https url(s) to webserver </label>
+                    <textarea name="keys" id="keys" class="form-control" rows="20">{$keys}</textarea>
+                </div>
+                <div class="col-sm-12">
+                    {foreach $apriories as $key => $text}
+                        <input type="radio" name="apriori" value="{$key}" {$checkedApriori == $key ? 'checked' : ''}> {$text}<br>
+                    {/foreach}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-success btn-lg">Classify</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {*List of sources*}
+    <div class="col-md-6">
+        <h2>List of known sources</h2>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th style="white-space: nowrap">Group name</th>
+                    <th>Sources</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$classificationTableSources as $group => $sources">
+                    <td style="white-space: nowrap">Group {$group}</td>
+                    <td>{$sources}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{*Results*}
+{include 'blocks/results.latte'}
+
+{*Contact*}
+{include 'blocks/contact.latte'}
+
+{*Questions and answers*}
+{include 'blocks/q-and-a.latte'}

@@ -1,0 +1,52 @@
+<div class="row row-margin">
+    <div class="col-md-12">
+        <h2>Q&amp;A section</h2>
+
+        <h5>Q: So what did you do?</h5>
+        <p class="col-md-12">
+            A: Figured out that RSA public key is leaking info about a library which created it. So we can tell which library you used for your key - based on public key only.
+        </p>
+
+        <h5>Q: Is single key enough to identify source library?</h5>
+        <p class="col-md-12">
+            A: Sometimes yes, but mostly no. If you have 5 keys from the same source, it will be quite accurate. Just press Classify button above.
+        </p>
+
+        <h5>Q: Can I mutually distinguish all libraries?</h5>
+        <p class="col-md-12">
+            A: Not always. Source libraries introducing exactly same bias to the value of generated public moduli will be undistinguishable.
+        </p>
+
+        <h5>Q: Can I identify also the version of used library?</h5>
+        <p class="col-md-12">
+            A: Sometimes. The new version of a library that did not change source code of key generation method will not be distinguishable from the older one. E.g., OpenSSL 1.0.2f is not distinguishable from OpenSSL 1.0.2g, but OpenSSL 1.0.2g is distinguishable from OpenSSL 2.0.12 FIPS.
+        </p>
+
+        <h5>Q: Have you tested all libraries of the world?</h5>
+        <p class="col-md-12">
+            A: No. We test a lot of them, but not all. We also did not test all possible version of given library. We are also missing hardware sources like SSL accelerators (contact us please, if you have one and like to contribute).
+        </p>
+
+        <h5>Q: How quickly will be the information leakage vulnerability you found fixed?</h5>
+        <p class="col-md-12">
+            A: Probably not soon. The fix would require changing code of key generation method for the most libraries. And developers don&#039;t like to mess with that part of crypto too often. Even if fixed in the new version, lot of old legacy libraries will use for a long time.
+        </p>
+
+        <h5>Q: So how can I protect my key(s)?</h5>
+        <p class="col-md-12">
+            A: If you need just one key, it is easy - just generate 5 keys instead of one, let all to be classified by our tool (<a href="http://crcs.cz/rsapp/" class="urlextern" target="_blank" title="http://crcs.cz/rsapp/" rel="nofollow noopener">http://crcs.cz/rsapp/</a>) and then keep the one which is classified with the least accuracy. If you need more keys to keep, it is slightly more tricky, but still can be done (with more keys generated and discarded).
+        </p>
+
+        <h5>Q: Are data you gathered and used publicly available?</h5>
+        <p class="col-md-12">
+            A: Definitely! Download everything in datasets section and try own analysis. Please don&#039;t forget to cite us.
+        </p>
+
+        <h5>Q: I want to know more details!</h5>
+        <p class="col-md-12">
+            A: Great, then read
+            <a href="http://crcs.cz/wiki/_media/public/papers/usenixsec16_1mrsakeys.pdf" {*class="media mediafile mf_pdf wikilink2"*} target="_blank" title="public:papers:usenixsec16_1mrsakeys.pdf" rel="noopener">original paper</a> and
+            <a href="http://crcs.cz/wiki/_media/public/papers/usenixsec16_1mrsakeys_trfimu_201603.pdf" {*class="media mediafile mf_pdf wikilink2"*} target="_blank" title="public:papers:usenixsec16_1mrsakeys_trfimu_201603.pdf" rel="noopener">technical report</a> for even more details.
+        </p>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+{
+    "name": "crocs/classify-rsa-keys-web",
+    "description": "Web application as a tool for classification RSA public keys in ASCII armored format or extracted from X509 certificates of HTTPS servers.",
+    "type": "project",
+    "require": {
+        "latte/latte": "^2.4",
+        "twbs/bootstrap": "^4.1",
+        "nette/neon": "^2.4",
+        "nette/database": "^2.4",
+        "nette/utils": "^2.5",
+        "nette/nette": "^2.4",
+        "kdyby/console": "^2.7",
+        "components/jquery": "^3.3"
+    },
+    "scripts": {
+        "post-update-cmd": ["@post-install-cmd"],
+        "post-install-cmd": [
+          "@php composer-post-install.php"
+        ],
+        "database-up": [
+          "@php www/index.php database:up"
+        ]
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Peter Sekan",
+            "email": "peter.sekan@mail.muni.cz"
+        }
+    ],
+    "minimum-stability": "stable"
+}

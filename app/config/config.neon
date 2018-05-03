@@ -1,0 +1,27 @@
+parameters:
+    dump: %appDir%/data/database-mysql.sql
+    classificationTable: %appDir%/data/classification-table.json
+    testKeys: %appDir%/data/input-placeholder.txt
+
+application:
+	errorPresenter: Error
+	mapping:
+		*: ClassifyRSA\Presenters\*Presenter
+
+session:
+	expiration: 14 days
+
+php:
+    date.timezone: Europe/Prague
+
+services:
+    router: ClassifyRSA\RouterFactory::createRouter
+    cache: Nette\Caching\Cache(@cache.storage)
+    classification: ClassifyRSA\ClassificationModel(%classificationTable%, %testKeys%, %apriori%)
+    database: ClassifyRSA\DatabaseModel(%classificationKeysLimit%, %classificationTimeLimit%)
+    databaseCommand:
+        class: ClassifyRSA\DatabaseCommand(%dump%)
+        tags: [kdyby.console.command]
+
+extensions:
+    console: Kdyby\Console\DI\ConsoleExtension
