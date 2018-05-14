@@ -1,10 +1,26 @@
-Installation guide:
+Command line application usage:
+----
+
+Run `php cli.php` and it downloads all dependencies and shows you all possible commands
+
+- `php cli.php cli:groups` shows all groups from classification table
+- `php cli.php cli:classify file` classify keys (and urls) from a file `file`
+
+Web application installation guide:
 ----
 
 - install dependencies with composer: `composer install`
 - configure a database connection in file `app/config/config.local.neon`
 - run initialization of a database `composer database-up`
 
+Requirements:
+----
+
+- php >= 5.6
+- php extensions
+  - bcmath
+  - openssl
+  
 Used libraries:
 ----
 
