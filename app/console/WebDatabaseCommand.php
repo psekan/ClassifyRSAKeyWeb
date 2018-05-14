@@ -7,7 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DatabaseCommand extends Command
+class WebDatabaseCommand extends Command
 {
     /**
      * @var Connection
@@ -28,7 +28,7 @@ class DatabaseCommand extends Command
 
     protected function configure()
     {
-        $this->setName('database:up')
+        $this->setName('web:database-up')
             ->setDescription('Initialize database tables');
     }
 

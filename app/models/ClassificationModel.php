@@ -166,7 +166,7 @@ class ClassificationModel
         foreach ($classificationTable->getGroupsNames() as $group) {
             $sources = $classificationTable->getGroupSources($group);
             natcasesort($sources);
-            $classificationTableSources[$group] = implode(', ', $sources);
+            $classificationTableSources[$group] = $sources;
         }
 
         return $classificationTableSources;

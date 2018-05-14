@@ -3,6 +3,10 @@ parameters:
     classificationTable: %appDir%/data/classification-table.json
     testKeys: %appDir%/data/input-placeholder.txt
 
+database:
+    options:
+        lazy: true
+
 application:
 	errorPresenter: Error
 	mapping:
@@ -19,8 +23,14 @@ services:
     cache: Nette\Caching\Cache(@cache.storage)
     classification: ClassifyRSA\ClassificationModel(%classificationTable%, %testKeys%, %apriori%)
     database: ClassifyRSA\DatabaseModel(%classificationKeysLimit%, %classificationTimeLimit%)
-    databaseCommand:
-        class: ClassifyRSA\DatabaseCommand(%dump%)
+    webDatabaseCommand:
+        class: ClassifyRSA\WebDatabaseCommand(%dump%)
+        tags: [kdyby.console.command]
+    cliGroupsCommand:
+        class: ClassifyRSA\CliGroupsCommand
+        tags: [kdyby.console.command]
+    cliClassifyCommand:
+        class: ClassifyRSA\CliClassifyCommand
         tags: [kdyby.console.command]
 
 extensions:

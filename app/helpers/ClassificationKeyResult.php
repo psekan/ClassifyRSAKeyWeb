@@ -59,7 +59,7 @@ class ClassificationKeyResult
      * @param RSAKey $rsaKey
      * @param array $orderedResults
      */
-    public function __construct($keyText, $duplicated, ClassificationRow $classificationRow, $identification, $mostAnonymous, RSAKey $rsaKey, array $orderedResults)
+    public function __construct($keyText, $duplicated, $classificationRow, $identification, $mostAnonymous, $rsaKey, array $orderedResults)
     {
         $this->keyText = $keyText;
         $this->duplicated = $duplicated;

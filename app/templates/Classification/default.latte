@@ -40,7 +40,7 @@
             <tbody>
                 <tr n:foreach="$classificationTableSources as $group => $sources">
                     <td style="white-space: nowrap">Group {$group}</td>
-                    <td>{$sources}</td>
+                    <td>{implode(', ', $sources)}</td>
                 </tr>
             </tbody>
         </table>

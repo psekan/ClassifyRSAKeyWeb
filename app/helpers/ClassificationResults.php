@@ -46,7 +46,7 @@ class ClassificationResults
      * @param ClassificationContainer $classificationContainer
      * @param array $orderedClassificationContainerResults
      */
-    public function __construct(array $keysResults, $correctKeys, $duplicateKeys, ClassificationContainer $classificationContainer, array $orderedClassificationContainerResults)
+    public function __construct(array $keysResults, $correctKeys, $duplicateKeys, $classificationContainer, array $orderedClassificationContainerResults)
     {
         $this->keysResults = $keysResults;
         $this->correctKeys = $correctKeys;
