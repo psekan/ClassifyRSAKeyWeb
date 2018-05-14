@@ -3,5 +3,3 @@ log.txt
 composer.phar
 
 /vendor/
-/temp/*
-/log/*
