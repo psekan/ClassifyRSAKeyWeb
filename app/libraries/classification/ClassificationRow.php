@@ -10,7 +10,7 @@ require_once __DIR__ . "/../common/Comparators.php";
  * @author Peter Sekan, peter.sekan@mail.muni.cz
  * @version 07.02.2016
  */
-class ClassificationRow {
+class ClassificationRow implements \JsonSerializable {
     private $sources = array();
 
 //    public function __construct(array $sources = array(), array $values = array()) {

@@ -57,7 +57,7 @@
                             <tr>
                                 {foreach $key->getOrderedResults() as $group => $value}
                                 <th style="white-space: nowrap">
-                                    <span data-toggle="tooltip" title="{$classificationTableSources[$group]}">Group {$group}</span>
+                                    <span data-toggle="tooltip" title="{implode(',',$classificationTableSources[$group])}">Group {$group}</span>
                                 </th>
                                 {/foreach}
                             </tr>
@@ -104,7 +104,7 @@
                             <tr>
                             {foreach $containerResults as $group => $value}
                                 <th class="clickAble{$iterator->first ? ' table-success' : ''}" data-group="{$group}" style="white-space: nowrap">
-                                    <span data-toggle="tooltip" title="{$classificationTableSources[$group]}">Group {$group}</span>
+                                    <span data-toggle="tooltip" title="{implode(',',$classificationTableSources[$group])}">Group {$group}</span>
                                 </th>
                             {/foreach}
                             </tr>

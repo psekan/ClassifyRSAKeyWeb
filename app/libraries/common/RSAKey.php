@@ -9,7 +9,7 @@ use Math_BigInteger as BigInteger;
  * @author David Formanek
  * @author Peter Sekan, peter.sekan@mail.muni.cz
  */
-class RSAKey {
+class RSAKey implements \JsonSerializable {
     /**
      * Parts of rsa key
      */
@@ -57,6 +57,14 @@ class RSAKey {
     public function __construct(BigInteger $modulus = null, BigInteger $exponent = null) {
         $this->modulus = $modulus;
         $this->exponent = $exponent;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'modulusBitLen' => strlen($this->getModulus()->toBits()),
+            'exponent' => intval($this->getExponent()->toString())
+        ];
     }
 
     /**

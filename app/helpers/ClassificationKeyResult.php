@@ -9,10 +9,11 @@
 namespace ClassifyRSA\Helpers;
 
 
+use JsonSerializable;
 use RSAKeyAnalysis\ClassificationRow;
 use RSAKeyAnalysis\RSAKey;
 
-class ClassificationKeyResult
+class ClassificationKeyResult implements JsonSerializable
 {
     /**
      * @var string
@@ -68,6 +69,25 @@ class ClassificationKeyResult
         $this->mostAnonymous = $mostAnonymous;
         $this->rsaKey = $rsaKey;
         $this->orderedResults = $orderedResults;
+    }
+
+    public function jsonSerializeOrderedResults() {
+        $results = $this->getOrderedResults();
+        array_walk($results, function(&$value, $key) {
+            $value = ['group' => $key, 'value' => $value];
+        });
+        return array_values($results);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'identification' => $this->getIdentification(),
+            'orderedResults' => $this->jsonSerializeOrderedResults(),
+            'rsaKey' => $this->getRsaKey(),
+            'mostAnonymous' => $this->isMostAnonymous(),
+            'duplicated' => $this->isDuplicated()
+        ];
     }
 
     /**

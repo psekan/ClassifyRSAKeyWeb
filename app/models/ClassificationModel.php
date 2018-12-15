@@ -151,7 +151,7 @@ class ClassificationModel
 
             $keysResults[] = new ClassificationKeyResult($key['text'],array_key_exists("duplicity", $key),$row,$key['identification'],array_key_exists("ta", $key) && $key['ta'], $key['key'], $this->orderedGroupsOfRows($row, $tableGroups));
         }
-        return new ClassificationResults($keysResults,$correctKeys,$duplicateKeys,$classificationContainer, $this->orderedGroupsOfRows($classificationContainer->getRow(), $tableGroups));
+        return new ClassificationResults($keysResults,$correctKeys,$duplicateKeys,$classificationContainer, $this->orderedGroupsOfRows($classificationContainer ? $classificationContainer->getRow() : null, $tableGroups));
     }
 
     /**
@@ -166,7 +166,7 @@ class ClassificationModel
         foreach ($classificationTable->getGroupsNames() as $group) {
             $sources = $classificationTable->getGroupSources($group);
             natcasesort($sources);
-            $classificationTableSources[$group] = $sources;
+            $classificationTableSources[$group] = array_values($sources);
         }
 
         return $classificationTableSources;

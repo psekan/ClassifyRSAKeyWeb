@@ -1,0 +1,85 @@
+.dragAndDropDefault {
+    /*background-image: url("/img/drag-drop.png");*/
+    background-color: #ffffff;
+    color: #222222;
+    border: 2px #FFF solid;
+    /*background-position: center;*/
+    /*background-repeat: no-repeat;*/
+    /*background-size: contain;*/
+
+}
+
+.dragAndDropReady {
+    background-image: url("/img/drag-drop.png");
+    background-color: #ffffff;
+    color: rgba(20, 20, 20, 0.1);
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px #FFF solid;
+    /*background-size: contain;*/
+}
+
+.dragAndDropUpload {
+    background-image: url("/img/drag-drop-upload.png");
+    background-color: #ffffff;
+    color: rgba(20, 20, 20, 0.1);
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px #AAA dashed;
+    /*background-size: contain;*/
+}
+
+body > div.container {
+    padding-bottom: 1rem !important;
+}
+
+.drag-and-drop-files {
+    display: none;
+}
+
+.drag-and-drop-files img {
+    width: 70px;
+    vertical-align: middle;
+}
+
+.drag-and-drop-files span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.drag-and-drop-files div {
+    display: inline-block;
+}
+
+.nav-separator {
+    margin: 0 auto;
+}
+
+.nav-progress-item {
+    display: none;
+    padding: 0.5rem 1rem;
+}
+
+
+.bs-popover-bottom .arrow::after, .bs-popover-auto[x-placement^="bottom"] .arrow::after {
+    top: 1px;
+    border-bottom-color: #2B3E50;
+}
+
+.popover-body {
+    padding: 0.5rem 0.75rem;
+    color: #EBEBEB;
+    background-color: #2B3E50;
+}
+
+.basic-results-card {
+    width: 100%;
+}
+
+#tableOfGroups {
+    margin: 0;
+}
+
+#tableOfGroups tr:first-child {
+    white-space: nowrap
+}
