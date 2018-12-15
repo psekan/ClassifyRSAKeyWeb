@@ -11,6 +11,8 @@ $(document).ready(function () {
     function showResults(data, sameSourceMultiKeysResults) {
         if (data.correctKeys === 0) {
             $("#foundRSAKeys").html("We have not found any RSA public key.");
+            $('#details-tab').addClass('disabled');
+            $('.onlyForSomeKeys').hide();
         }
         else {
             if (data.correctKeys === 1) {
@@ -56,64 +58,14 @@ $(document).ready(function () {
                 }
 
             }
-        }
 
-
-        $("#resultsKeys").html("");
-        $("#resultsKeysTogether").html("");
-        // if (sameSourceMultiKeysResults === true) {
-            var lines = [];
-            lines = lines.concat(['<div style="overflow-y: hidden; overflow-x: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
-            //Header columns
-            data.containerResults.forEach(function (res) {
-                lines = lines.concat([
-                    '<th style="white-space: nowrap">',
-                    '  <span data-toggle="tooltip" title="tooltip-tmp">Group ' + res.group + '</span>',
-                    '</th>'
-                ]);
-            });
-            lines = lines.concat(['  </tr>', '  </thead>', '  <tbody>', '  <tr>']);
-            //Body columns
-            if (data.containerResults === null) {
-                //TODO
-            }
-            else {
-                data.containerResults.forEach(function (res) {
-                    lines = lines.concat([
-                        '<td style="white-space: nowrap">',
-                        '  ' + (res.value === null ? 'not possible' : (res.value * 100).toFixed(2) + " %"),
-                        '</td>'
-                    ]);
-                });
-            }
-            lines = lines.concat(['  </tr>', '  </tbody>', '  </table>', '</div>']);
-
-            //Add key result table to the results
-            var fixture = $(lines.join("\n"));
-            $("#resultsKeysTogether").append(fixture);
-        // }
-        // else {
-            //Construct table of results for each key
-            data.classifiedKeys.forEach(function (key) {
-                //Identification of the key
+            $("#resultsKeys").html("");
+            $("#resultsKeysTogether").html("");
+            // if (sameSourceMultiKeysResults === true) {
                 var lines = [];
-                lines = lines.concat([
-                    '<table class="table table-condensed" style="margin-bottom: 0;">',
-                    '  <tbody><tr><td style="border: 0;">',
-                    '<b>Key identification:</b> <i>' + key.identification + '</i>',
-                    '</td>'
-                ]);
-                if (key.rsaKey !== null) {
-                    lines = lines.concat([
-                        '<td style="border: 0;width: 140px;text-align: right;"><b>Key length:</b>' + key.rsaKey.modulusBitLen + '</td>',
-                        '<td style="border: 0;width: 130px;text-align: right;"><b>Exponent:</b>' + key.rsaKey.exponent + '</td>'
-                    ]);
-                }
-                lines = lines.concat(['</tr></tbody></table>']);
-
                 lines = lines.concat(['<div style="overflow-y: hidden; overflow-x: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
                 //Header columns
-                key.orderedResults.forEach(function (res) {
+                data.containerResults.forEach(function (res) {
                     lines = lines.concat([
                         '<th style="white-space: nowrap">',
                         '  <span data-toggle="tooltip" title="tooltip-tmp">Group ' + res.group + '</span>',
@@ -122,11 +74,11 @@ $(document).ready(function () {
                 });
                 lines = lines.concat(['  </tr>', '  </thead>', '  <tbody>', '  <tr>']);
                 //Body columns
-                if (key.rsaKey === null) {
-                    lines = lines.concat(['<td colspan="' + key.orderedResults.length + '" style="text-align: center;"><b>NO RSA KEY FOUND</b></td>']);
+                if (data.containerResults === null) {
+                    //TODO
                 }
                 else {
-                    key.orderedResults.forEach(function (res) {
+                    data.containerResults.forEach(function (res) {
                         lines = lines.concat([
                             '<td style="white-space: nowrap">',
                             '  ' + (res.value === null ? 'not possible' : (res.value * 100).toFixed(2) + " %"),
@@ -138,18 +90,68 @@ $(document).ready(function () {
 
                 //Add key result table to the results
                 var fixture = $(lines.join("\n"));
-                $("#resultsKeys").append(fixture);
-            });
-        // }
-        $("#tableOfGroups tbody").html("");
-        for (var group in groups) {
-            if (groups.hasOwnProperty(group)) {
-                $("#tableOfGroups tbody").append("<tr><td>Group " + group + "</td><td>" + groups[group].join(", ") + "</td></tr>");
-            }
-        }
+                $("#resultsKeysTogether").append(fixture);
+            // }
+            // else {
+                //Construct table of results for each key
+                data.classifiedKeys.forEach(function (key) {
+                    //Identification of the key
+                    var lines = [];
+                    lines = lines.concat([
+                        '<table class="table table-condensed" style="margin-bottom: 0;">',
+                        '  <tbody><tr><td style="border: 0;">',
+                        '<b>Key identification:</b> <i>' + key.identification + '</i>',
+                        '</td>'
+                    ]);
+                    if (key.rsaKey !== null) {
+                        lines = lines.concat([
+                            '<td style="border: 0;width: 140px;text-align: right;"><b>Key length:</b>' + key.rsaKey.modulusBitLen + '</td>',
+                            '<td style="border: 0;width: 130px;text-align: right;"><b>Exponent:</b>' + key.rsaKey.exponent + '</td>'
+                        ]);
+                    }
+                    lines = lines.concat(['</tr></tbody></table>']);
 
+                    lines = lines.concat(['<div style="overflow-y: hidden; overflow-x: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
+                    //Header columns
+                    key.orderedResults.forEach(function (res) {
+                        lines = lines.concat([
+                            '<th style="white-space: nowrap">',
+                            '  <span data-toggle="tooltip" title="tooltip-tmp">Group ' + res.group + '</span>',
+                            '</th>'
+                        ]);
+                    });
+                    lines = lines.concat(['  </tr>', '  </thead>', '  <tbody>', '  <tr>']);
+                    //Body columns
+                    if (key.rsaKey === null) {
+                        lines = lines.concat(['<td colspan="' + key.orderedResults.length + '" style="text-align: center;"><b>NO RSA KEY FOUND</b></td>']);
+                    }
+                    else {
+                        key.orderedResults.forEach(function (res) {
+                            lines = lines.concat([
+                                '<td style="white-space: nowrap">',
+                                '  ' + (res.value === null ? 'not possible' : (res.value * 100).toFixed(2) + " %"),
+                                '</td>'
+                            ]);
+                        });
+                    }
+                    lines = lines.concat(['  </tr>', '  </tbody>', '  </table>', '</div>']);
+
+                    //Add key result table to the results
+                    var fixture = $(lines.join("\n"));
+                    $("#resultsKeys").append(fixture);
+                });
+            // }
+            $("#tableOfGroups tbody").html("");
+            for (var group in groups) {
+                if (groups.hasOwnProperty(group)) {
+                    $("#tableOfGroups tbody").append("<tr><td>Group " + group + "</td><td>" + groups[group].join(", ") + "</td></tr>");
+                }
+            }
+
+            $('#details-tab').removeClass('disabled');
+            $('.onlyForSomeKeys').show();
+        }
         $('#results-tab').removeClass('disabled');
-        $('#details-tab').removeClass('disabled');
         $("#results-tab").popover('enable');
         $("#results-tab").popover('show');
         setTimeout(function () {
