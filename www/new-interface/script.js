@@ -63,7 +63,7 @@ $(document).ready(function () {
         $("#resultsKeysTogether").html("");
         // if (sameSourceMultiKeysResults === true) {
             var lines = [];
-            lines = lines.concat(['<div style="overflow: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
+            lines = lines.concat(['<div style="overflow-y: hidden; overflow-x: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
             //Header columns
             data.containerResults.forEach(function (res) {
                 lines = lines.concat([
@@ -111,7 +111,7 @@ $(document).ready(function () {
                 }
                 lines = lines.concat(['</tr></tbody></table>']);
 
-                lines = lines.concat(['<div style="overflow: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
+                lines = lines.concat(['<div style="overflow-y: hidden; overflow-x: auto;">', '<table class="table table-condensed table-bordered" style="margin-bottom: 0;">', '  <thead><tr>']);
                 //Header columns
                 key.orderedResults.forEach(function (res) {
                     lines = lines.concat([
