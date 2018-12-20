@@ -288,6 +288,13 @@ $(document).ready(function () {
         $("#details-tab").tab("show");
     });
 
+    $("#insertOpenSSLKeys").click(function () {
+        $.get( "keys/openssl.txt", function( data ) {
+            $(textarea).val($(textarea).val() + "\n" + data);
+            initSendingProcess();
+        });
+    });
+
     'use strict';
 
     ;(function (document, window, index) {
