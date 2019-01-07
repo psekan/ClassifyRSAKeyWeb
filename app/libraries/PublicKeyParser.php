@@ -11,6 +11,7 @@ namespace RSAKeyAnalysis;
 use Math_BigInteger as BigInteger;
 use OpenPGP;
 use OpenPGP_Crypt_RSA;
+use OpenPGP_Message;
 
 set_include_path(__DIR__);
 
@@ -55,17 +56,32 @@ class PublicKeyParser
             self::$maxUrlsClassifiable--;
         }
         $url = str_replace("https://", "", $url);
-        $firstDel = strpos($url, '/');
-        if ($firstDel !== false) {
-            $url = substr($url, 0, $firstDel);
+        $posEnds = [strlen($url)];
+        $delimiters = ["/"," "];
+        foreach ($delimiters as $delimiter) {
+            $newPos = strpos($url, $delimiter);
+            if ($newPos !== false) {
+                $posEnds[] = $newPos;
+            }
         }
-        $g = stream_context_create(array("ssl" => array("capture_peer_cert" => true)));
-        $r = stream_socket_client("ssl://" . $url . ":443", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $g);
-        if ($r === false) {
+        $firstDel = min($posEnds);
+        $url = substr($url, 0, $firstDel);
+//        $firstDel = strpos($url, '/');
+//        if ($firstDel !== false) {
+//            $url = substr($url, 0, $firstDel);
+//        }
+        try {
+            $g = stream_context_create(array("ssl" => array("capture_peer_cert" => true)));
+            $r = @stream_socket_client("ssl://" . $url . ":443", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $g);
+            if ($r === false) {
+                return null;
+            }
+            $cont = stream_context_get_params($r);
+            return self::tryOpenSSL($cont["options"]["ssl"]["peer_certificate"]);
+        }
+        catch (\Throwable $ex) {
             return null;
         }
-        $cont = stream_context_get_params($r);
-        return self::tryOpenSSL($cont["options"]["ssl"]["peer_certificate"]);
     }
 
     /**
@@ -75,21 +91,39 @@ class PublicKeyParser
     public static function parseMultiFromString($armoredKeys) {
         $keys = array();
         $pos = 0;
+        $inputLength = strlen($armoredKeys);
         while (true) {
             $posOfSSH = strpos($armoredKeys, 'ssh-rsa ', $pos);
             $posOfUrl = strpos($armoredKeys, 'https://', $pos);
             $posOfArmor = strpos($armoredKeys, '-----BEGIN', $pos);
 
-            $pos = $armor = false;
-            if ($pos === false || ($posOfUrl !== false && $pos > $posOfUrl)) $pos = $posOfUrl;
-            if ($pos === false || ($posOfSSH !== false && $pos > $posOfSSH)) $pos = $posOfSSH;
-            if ($pos === false || ($posOfArmor !== false && $pos > $posOfArmor)) {
-                $pos = $posOfArmor;
-                $armor = true;
-            }
-            if ($pos === false) break;
+            $pos = $keyString = false;
+            if ($posOfUrl !== false) {
+                $pos = $posOfUrl;
 
-            if ($armor) {
+                $posEnds = [$inputLength];
+                $delimiters = ["\n","\t","?"," "];
+                foreach ($delimiters as $delimiter) {
+                    $newPos = strpos($armoredKeys, $delimiter, $pos);
+                    if ($newPos !== false) {
+                        $posEnds[] = $newPos;
+                    }
+                }
+                $posEnd = min($posEnds);
+                $keyString = substr($armoredKeys, $pos, $posEnd - $pos);
+            }
+            if ($posOfSSH !== false && ($pos === false || $pos > $posOfSSH)) {
+                $pos = $posOfSSH;
+
+                $posEnd = strpos($armoredKeys, "\n", $pos);
+                if ($posEnd === false) {
+                    $posEnd = $inputLength;
+                }
+                $keyString = substr($armoredKeys, $pos, $posEnd - $pos);
+            }
+            if ($posOfArmor !== false && ($pos === false || $pos > $posOfArmor)) {
+                $pos = $posOfArmor;
+
                 $posEnd = strpos($armoredKeys, '-----END', $pos);
                 if ($posEnd === false) break;
                 $posEnd += 8;
@@ -98,19 +132,14 @@ class PublicKeyParser
                 $posEnd += 5;
                 $keyString = substr($armoredKeys, $pos, $posEnd - $pos);
             }
-            else {
-                $posEnd = strpos($armoredKeys, "\n", $pos);
-                if ($posEnd === false) {
-                    $posEnd = strlen($armoredKeys);
-                }
-                $keyString = substr($armoredKeys, $pos, $posEnd - $pos);
-            }
+            if ($pos === false || $keyString === false) break;
+
             $key = self::parseFromString($keyString);
-            $keys[] = array(
+            $keys[] = [
                 "text" => $keyString,
                 "identification" => self::generateKeyIdentification($keyString),
-                "key" => $key,
-            );
+                "key" => $key
+            ];
             $pos = $posEnd;
         }
         return $keys;
@@ -133,6 +162,15 @@ class PublicKeyParser
         else {
             $blankLine = "\n\n";
             $keyString = str_replace("\r", "", $keyString);
+            if (strpos($keyString, '-----BEGIN PGP PUBLIC KEY BLOCK-----') !== false) {
+                $unArmor = OpenPGP::unarmor($keyString);
+                if ($unArmor !== null) {
+                    if (!is_object($unArmor)) $unArmor = OpenPGP_Message::parse($unArmor);
+                    if ($unArmor instanceof OpenPGP_Message) $unArmor = $unArmor[0];
+                    if (property_exists($unArmor, 'key')) return /*'PGP ID - ' .*/ strtoupper($unArmor->key_id);
+                }
+            }
+
             $newlinePos = strpos($keyString, $blankLine);
             if ($newlinePos !== false) {
                 return substr($keyString, $newlinePos + strlen($blankLine), self::LENGTH_OF_IDENTIFICATION);

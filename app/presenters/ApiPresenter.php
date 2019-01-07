@@ -54,8 +54,18 @@ class ApiPresenter extends Presenter
                 /** @var FileUpload $file */
                 $tmpFile = $file->getTemporaryFile();
                 if ($keys == null) $keys = '';
+                $fileContent = file_get_contents($tmpFile);
                 $keys .= PHP_EOL . PHP_EOL;
-                $keys .= file_get_contents($tmpFile);
+                if (ord($fileContent) == 0x30) {
+                    $pem = chunk_split(base64_encode($fileContent), 64, "\n");
+                    $pemRsaPublicKeyBase64Prefix = 'MIGfMA0GCSqGSIb3DQEBAQUA';
+                    if (substr($pem, 0, strlen($pemRsaPublicKeyBase64Prefix)) == $pemRsaPublicKeyBase64Prefix) {
+                        $keys .= "-----BEGIN PUBLIC KEY-----\n".$pem."-----END PUBLIC KEY-----\n";
+                    }
+                }
+                else {
+                    $keys .= $fileContent;
+                }
                 unlink($tmpFile);
             }
         }
