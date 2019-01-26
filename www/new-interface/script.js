@@ -300,8 +300,8 @@ $(document).ready(function () {
         });
     });
 
-    $("#insertMicrosoft").click(function () {
-        $.get( "keys/microsoft.txt", function( data ) {
+    $("#insertMbedtls").click(function () {
+        $.get( "keys/mbedtls.txt", function( data ) {
             var actualValue = $(textarea).val();
             if (actualValue != "") {
                 actualValue = actualValue + "\n";
