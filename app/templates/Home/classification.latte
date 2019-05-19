@@ -1,0 +1,292 @@
+<h3>Online classification</h3>
+<div class="row justify-content-md-center pt-3">
+    <div class="col-12 col-md-10">
+
+        <!-- Card -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="classify-tab" data-toggle="tab" href="#classify" role="tab"
+                           aria-controls="classify" aria-selected="true">1. Insert your key/s </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="results-tab" data-toggle="tab" href="#results" role="tab"
+                           aria-controls="results" aria-selected="false" data-content="We have a new morphology results here." data-triger="manual" data-placement="bottom">2. Basic result</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="details-tab" data-toggle="tab" href="#details" role="tab"
+                           aria-controls="details" aria-selected="false">3. Details</a>
+                    </li>
+                    <li class="nav-item nav-separator">
+                        &nbsp;
+                    </li>
+                    <li class="nav-item nav-progress-item">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+                                 style="width: 25px"></div>
+                        </div>
+                    </li>
+                    {*<li class="nav-item nav-separator">*}
+                    {*&nbsp;*}
+                    {*</li>*}
+{*                    <li class="nav-item">*}
+{*                        <a class="nav-link" id="research-tab" data-toggle="tab" href="#research" role="tab"*}
+{*                           aria-controls="research" aria-selected="false">Research details</a>*}
+{*                    </li>*}
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="card-text">
+                    <div class="tab-content" id="baseContent">
+                        <div class="tab-pane fade show active" id="classify" role="tabpanel"
+                             aria-labelledby="classify-tab">
+                            <h4 class="card-title">Morphology of your RSA public keys</h4>
+                            <!-- Form -->
+                            <form id="keysForm">
+                                <fieldset>
+                                    <!--<legend>Legend</legend>-->
+                                    <div class="form-group">
+                                        <label for="keys">Insert or drag & drop public RSA key/s</label>
+                                        <textarea class="form-control dragAndDropDefault" id="keys"
+                                                  rows="7"></textarea>
+                                        <!--<input type="file" name="files[]" id="keysFile" class="keysFile" data-multiple-caption="{l}count{r} files selected" multiple="">-->
+                                        <span>
+                                        </span>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="drag-and-drop-files">
+                                                <div>
+                                                    <img src="/new-interface/key-file-format-variant.svg" class="img-fluid key-image">
+                                                </div>
+                                                <div>
+                                                    <span>You insert ... keys</span> <button type="button" class="btn btn-link" id="removeFiles">Remove files</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <h6>Where was/were your key/s generated?</h6>
+                                                <div class="radio">
+                                                    <label class="radio-inline"><input type="radio" name="type_flag" value="sw">Software library</label>
+                                                    <label class="radio-inline"><input type="radio" name="type_flag" value="hw">Hardware device</label>
+                                                    <label class="radio-inline"><input type="radio" name="type_flag" value="both" checked>I do not know</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div style="text-align: right;">
+                                                Insert 5 test keys generated by:<br>
+                                                <button type="button" class="btn btn-primary" id="insertOpenSSLKeys">OpenSSL</button>
+                                                <button type="button" class="btn btn-primary" id="insertMbedtls">mbedTLS 2.8.0</button>
+                                            </div>
+                                        </div>
+                                        {*<div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>*}
+                                    </div>
+
+                                    <!-- Button trigger modal -->
+                                    {*<button type="submit" class="btn btn-primary" data-toggle="modal"*}
+                                    {*data-target="#progressModal">*}
+                                    {*Classify*}
+                                    {*</button>*}
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="results" role="tabpanel" aria-labelledby="results-tab">
+                            <h4 class="card-title">Morphology of your RSA public keys</h4>
+                            <div class="row">
+                                <div class="col-md-6 d-flex align-items-stretch">
+                                    <div class="card mb-3 basic-results-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">RSA public keys</h5>
+                                            <p class="card-text" id="foundRSAKeys"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-stretch onlyForSomeKeys">
+                                    <div class="card mb-3 basic-results-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Most probable source/s</h5>
+                                            <p class="card-text" id="mostProbableSource"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 d-flex align-items-stretch onlyForSomeKeys">
+                                    <div class="card mb-3 basic-results-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Results accuracy</h5>
+                                            <p class="card-text" id="resultsAccuracy"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-stretch onlyForSomeKeys">
+                                    <div class="card mb-3 basic-results-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Negative results</h5>
+                                            <p class="card-text" id="negativeResults"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-primary" id="goToInsert">🢀 Insert more keys</button>
+                                    {*Or you can add more keys on the first tab*}
+                                    {*<button type="button" style="padding: 2px; position: relative; top: -2px;" class="btn btn-link" id="goToInsert">1. Insert your key/s</button>.*}
+                                </div>
+                                <div class="col-6" style="text-align: right;">
+                                    <button type="button" class="btn btn-primary" id="goToDetails">Detailed results 🢂</button>
+                                    {*If you want to get more details about each key separately, go to the next tab*}
+                                    {*<button type="button" style="padding: 2px; position: relative; top: -2px;" class="btn btn-link" id="goToDetails">3. Details</button>.*}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+                            <h4 class="card-title">Morphology of your RSA public keys</h4>
+
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    Results for each key separately
+                                    <a class="btn btn-outline-secondary btn-sm" style="float:right" data-toggle="collapse" href="#resultsKeysCollapseBody" role="button" aria-expanded="false" aria-controls="resultsKeysCollapseBody">
+                                        Show/Hide
+                                    </a>
+                                </div>
+                                <div class="card-body collapse" id="resultsKeysCollapseBody" style="padding: 0 1rem 1rem 1rem;">
+                                    <div class="row card-text">
+                                        <div class="col-12" style="text-align: center; margin: 2em 0 1em">
+                                            <p>We think that your separate key(s) were generated by (sorted from the most probable)</p>
+                                        </div>
+                                        <div class="col-12" id="resultsKeys">
+                                            <!-- Place where will be tables with results of keys -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    Result for same source (all inserted keys are assumed to be
+                                    generated by the same source)
+                                </div>
+                                <div class="card-body" style="padding: 1rem;">
+                                    <div class="row card-text">
+                                        <div class="col-12" id="resultsKeysTogether">
+                                            <!-- Place where will be tables with results of keys -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    List of known sources
+                                </div>
+                                <div class="card-body" style="padding: 1rem;">
+                                    <table class="table table-sm" id="tableOfGroups">
+                                        <thead>
+                                        <tr>
+                                            <th>Group name</th>
+                                            <th>Sources</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+{*                        <div class="tab-pane fade" id="research" role="tabpanel" aria-labelledby="research-tab">*}
+{*                            {include '../Classification/blocks/q-and-a.latte'}*}
+{*                        </div>*}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+        <!-- Progress Modal -->
+        <div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel"
+             aria-hidden="true" data-backdrop="static" data-keybeoard="false">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="progressModalLabel">Classification in progress</h5>
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>  -->
+                    </div>
+                    <div class="modal-body">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+                                 style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <!--<div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModalLabel">An error occurred</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="errorModalMessage"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Option Modal -->
+        <div class="modal fade" id="optionModal" tabindex="-1" role="dialog" aria-labelledby="optionModalLabel"
+             aria-hidden="true" data-backdrop="static" data-keybeoard="false">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="optionModalLabel">Source of keys</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>We found <span id="optionModalNumOfKeys"></span> keys, are they generated by the same
+                            software/hardware?</p>
+                        <div class="row">
+                            <div class="col-6 pr-2">
+                                <button type="button" class="btn btn-primary" id="optionModalYesButton"
+                                        data-dismiss="modal" style="width: 100%">Yes
+                                </button>
+                            </div>
+                            <div class="col-6 pl-2">
+                                <button type="button" class="btn btn-primary" id="optionModalNoButton"
+                                        data-dismiss="modal" style="width: 100%">No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

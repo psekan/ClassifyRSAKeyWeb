@@ -27,7 +27,8 @@ class CliClassifyCommand extends Command
         $this->setName('cli:classify')
             ->setDescription('Classify RSA keys.')
             ->addArgument('file', InputArgument::REQUIRED, 'File with RSA keys')
-            ->addOption('prior', 'p', InputOption::VALUE_REQUIRED, 'Prior probability for sources: equal, tls, pgp.', 'equal');
+            ->addOption('prior', 'p', InputOption::VALUE_REQUIRED, 'Prior probability for sources: equal, tls, pgp.', 'equal')
+            ->addOption('source', 's', InputOption::VALUE_REQUIRED, 'Type of sources: sw, hw, both.', 'both');
     }
 
     /**
@@ -38,6 +39,7 @@ class CliClassifyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $typeFlag = $input->getOption('source');
         $prior = $input->getOption('prior');
         switch ($prior) {
             case 'tls': break;
@@ -49,7 +51,7 @@ class CliClassifyCommand extends Command
             $output->writeln('File `'.$fileWithKeys.'` does not exist.');
             return;
         }
-        $results = $this->classificationModel->classifyKeys(file_get_contents($fileWithKeys), null, $prior);
+        $results = $this->classificationModel->classifyKeys(file_get_contents($fileWithKeys), null, $prior, $typeFlag);
 
         /** @var FormatterHelper $formatter */
         $formatter = $this->getHelper('formatter');

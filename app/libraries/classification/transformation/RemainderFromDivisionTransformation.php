@@ -15,6 +15,12 @@ class RemainderFromDivisionTransformation extends Transformation {
      */
     private $divisor;
 
+    /**
+     * RemainderFromDivisionTransformation constructor.
+     * @param $from
+     * @param $options
+     * @throws WrongOptionsFormatException
+     */
     public function __construct($from, $options) {
         parent::__construct($from, $options);
         $this->divisor = intval($this->getRequiredOption("divisor"));
@@ -26,6 +32,7 @@ class RemainderFromDivisionTransformation extends Transformation {
         $value = $remainder->toString();
         if (strpos($value, '.') !== false) {
             preg_match('/(.*)\..*/s', $value, $matches);
+            if (strlen($matches[1]) == 0) return "0";
             return $matches[1];
         }
         return $value;

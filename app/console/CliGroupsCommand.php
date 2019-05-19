@@ -24,7 +24,8 @@ class CliGroupsCommand extends Command
     {
         $this->setName('cli:groups')
             ->setDescription('Information about classification table.')
-            ->addOption('prior', 'p', InputOption::VALUE_REQUIRED, 'Prior probability for sources: equal, tls, pgp.', 'equal');
+            ->addOption('prior', 'p', InputOption::VALUE_REQUIRED, 'Prior probability for sources: equal, tls, pgp.', 'equal')
+            ->addOption('source', 's', InputOption::VALUE_REQUIRED, 'Type of sources: sw, hw, both.', 'both');
     }
 
     /**
@@ -35,13 +36,14 @@ class CliGroupsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $typeFlag = $input->getOption('source');
         $prior = $input->getOption('prior');
         switch ($prior) {
             case 'tls': break;
             case 'pgp': break;
             default: $prior = 'equal'; break;
         }
-        $groups = $this->classificationModel->getClassificationSources($prior);
+        $groups = $this->classificationModel->getClassificationSources($prior, $typeFlag);
         $table = new Table($output);
         $table->setHeaders(['Group name','Sources']);
         foreach ($groups as $name => $sources) {

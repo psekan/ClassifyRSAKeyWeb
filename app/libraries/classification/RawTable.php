@@ -1,6 +1,11 @@
 <?php
 namespace RSAKeyAnalysis;
 
+use Exception;
+use GroupsComparator;
+use Tracy\Debugger;
+use Tracy\ILogger;
+
 require_once __DIR__ . "/../Math/BigInteger.php";
 require_once __DIR__ . "/../common/Comparators.php";
 require_once __DIR__ . "/ClassificationContainer.php";
@@ -31,10 +36,10 @@ class RawTable {
     
     private $date;
 
-    public function __construct($identifications, $groups, $date) {
+    public function __construct($identifications, $groups, $date = null) {
         $this->identifications = $identifications;
         $this->groups = $groups;
-        $this->date = $date;
+        $this->date = $date ?: date("Y-m-d H:i:s");
     }
 
     public function getMaxEuclideanDistanceForGroup() {
@@ -136,6 +141,7 @@ class RawTable {
                 }
             }
 
+
             if ($minDistance != null && $minDistance < $this->getMaxEuclideanDistanceForGroup()) {
                 $remove = null;
                 foreach ($newGroups as $key => $val) {
@@ -145,7 +151,7 @@ class RawTable {
                     }
                 }
                 if ($remove == null) {
-                    throw new \Exception("Cannot remove some set during clustering.");
+                    throw new Exception("Cannot remove some set during clustering.");
                 }
 
                 foreach ($newGroups as $key => $val) {
@@ -177,7 +183,7 @@ class RawTable {
     public function computeTableGrouped() {
         $groups = $this->computeSourceGroups();
 
-        \GroupsComparator::setGroupsComparator($this->getRepresentants());
+        GroupsComparator::setGroupsComparator($this->getRepresentants());
         $classificationTableGrouped = array();
         foreach ($groups as $group) {
             $identificationsCount = array();
@@ -200,6 +206,7 @@ class RawTable {
     /**
      * @param array $sourceWeight
      * @return ClassificationTable
+     * @throws Exception
      */
     public function computeClassificationTable($sourceWeight = array()) {
         $tableGrouped = $this->computeTableGrouped();
@@ -246,19 +253,20 @@ class RawTable {
         //Table
         $root["table"] = $this->table;
         if (file_put_contents($fileName, json_encode($root)) === false) {
-            throw new \Exception("Cannot save table as json to file '" . $fileName . "'");
+            throw new Exception("Cannot save table as json to file '" . $fileName . "'");
         }
     }
 
     /**
      * @param $fileName
+     * @param string $typeFlag
      * @return RawTable
      * @throws \Exception
      */
-    public static function load($fileName) {
+    public static function load($fileName, $typeFlag = "") {
         $content = file_get_contents($fileName);
         if ($content === false) {
-            throw new \Exception("Cannot read table from file '" . $fileName . "'");
+            throw new Exception("Cannot read table from file '" . $fileName . "'");
         }
 
         $root = json_decode($content, true);
@@ -268,6 +276,20 @@ class RawTable {
 
         $rawTable = new RawTable($identifications, $groups, $date);
         $rawTable->table = $root["table"];
+        if ($typeFlag != "") {
+            if (!array_key_exists("typeFlag", $root)) {
+                Debugger::log("Classification with typeFlag required, but classification table does not contain typeFlag property.",ILogger::WARNING);
+            }
+            else {
+                $tmpTable = [];
+                foreach ($rawTable->table as $key => $value) {
+                    if (array_key_exists($key, $root["typeFlag"]) && $root["typeFlag"][$key] == $typeFlag) {
+                        $tmpTable[$key] = $value;
+                    }
+                }
+                $rawTable->table = $tmpTable;
+            }
+        }
         return $rawTable;
     }
 
@@ -283,6 +305,11 @@ class RawTable {
         return $tableTemp;
     }
 
+    /**
+     * @param $numberOfKeysFromSource
+     * @return array
+     * @throws Exception
+     */
     public function splitForTests($numberOfKeysFromSource) {
         $testsKeysTable = new RawTable($this->identifications, $this->groups);
         $withoutTestsKeysTable = new RawTable($this->identifications, $this->groups);
@@ -296,7 +323,7 @@ class RawTable {
             $numOfKeys = $numberOfKeysFromSource;
             $sumOfKeys = array_sum($tableTemp[$source]);
             if ($sumOfKeys < $numOfKeys) {
-                throw new \Exception("In table is less then " . $numOfKeys . " keys (" . $sumOfKeys . ").");
+                throw new Exception("In table is less then " . $numOfKeys . " keys (" . $sumOfKeys . ").");
             }
             while ($numOfKeys > 0) {
                 $randomIdentification = null;
@@ -309,7 +336,7 @@ class RawTable {
                     $keyPos -= $entryValue;
                 }
                 if ($randomIdentification == null) {
-                    throw new \Exception("Cannot get random key from table.");
+                    throw new Exception("Cannot get random key from table.");
                 }
                 $keys = $tableTemp[$source][$randomIdentification];
                 if ($keys == 1) {

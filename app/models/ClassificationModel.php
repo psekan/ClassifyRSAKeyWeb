@@ -50,23 +50,31 @@ class ClassificationModel
         $this->classificationTableFile = $classificationTableFile;
         $this->testKeysFile = $testKeysFile;
         $this->cache = $cache;
-        $this->apriories = $apriories;
+        $this->apriories = is_array($apriories) ? $apriories : [];
     }
 
     /**
      * @param $apriori
+     * @param string $typeFlag
      * @return ClassificationTable
      * @throws \Throwable
      */
-    public function computeClassificationTable($apriori) {
-        $classificationTable = $this->cache->load(self::CACHE_KEY_PREFIX . $apriori);
+    public function computeClassificationTable($apriori, $typeFlag = "") {
+        $typeFlag = strtolower($typeFlag);
+        if (!in_array($typeFlag, ["sw", "hw"])) {
+            $typeFlag = "";
+        }
+
+        $cacheKey = self::CACHE_KEY_PREFIX . $apriori . $typeFlag;
+
+        $classificationTable = $this->cache->load($cacheKey);
         if ($classificationTable === null) {
             $apriories = [];
             if (array_key_exists($apriori,$this->apriories)) {
                 $apriories = $this->apriories[$apriori];
             }
-            $classificationTable = RawTable::load($this->classificationTableFile)->computeClassificationTable($apriories);
-            $this->cache->save(self::CACHE_KEY_PREFIX . $apriori, $classificationTable);
+            $classificationTable = RawTable::load($this->classificationTableFile, $typeFlag)->computeClassificationTable($apriories);
+            $this->cache->save($cacheKey, $classificationTable);
         }
         return $classificationTable;
     }
@@ -82,12 +90,13 @@ class ClassificationModel
      * @param $keysText
      * @param int $maxUrlsClassifiable
      * @param string $apriori
+     * @param string $typeFlag
      * @return ClassificationResults
      * @throws \Throwable
      */
-    public function classifyKeys($keysText, $maxUrlsClassifiable = 10, $apriori = '') {
-        $classificationTable = $this->computeClassificationTable($apriori);
-        $tableGroups = array_keys($this->getClassificationSources($apriori));
+    public function classifyKeys($keysText, $maxUrlsClassifiable = 10, $apriori = '', $typeFlag = "") {
+        $classificationTable = $this->computeClassificationTable($apriori, $typeFlag);
+        $tableGroups = array_keys($this->getClassificationSources($apriori, $typeFlag));
 
         PublicKeyParser::$maxUrlsClassifiable = $maxUrlsClassifiable;
         $keys = PublicKeyParser::parseMultiFromString($keysText);
@@ -156,11 +165,12 @@ class ClassificationModel
 
     /**
      * @param $apriories
+     * @param string $typeFlag
      * @return array
      * @throws \Throwable
      */
-    public function getClassificationSources($apriories) {
-        $classificationTable = $this->computeClassificationTable($apriories);
+    public function getClassificationSources($apriories, $typeFlag = "") {
+        $classificationTable = $this->computeClassificationTable($apriories, $typeFlag);
 
         $classificationTableSources = [];
         foreach ($classificationTable->getGroupsNames() as $group) {

@@ -5,6 +5,7 @@ namespace ClassifyRSA\Presenters;
 use ClassifyRSA\ClassificationModel;
 use ClassifyRSA\DatabaseModel;
 use Nette\Caching\Cache;
+use Throwable;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -47,9 +48,10 @@ class ClassificationPresenter extends Presenter
         $postSource = $request->getPost('source');
         $postCorrect = $request->getPost('correct');
         $postClassified = $request->getPost('classified');
+        $typeFlag = $request->getPost('type_flag');
         $keys = $request->getPost('keys');
 
-        $tableGroups = $this->cache->call([$this->classificationModel, 'getClassificationSources'],$apriories);
+        $tableGroups = $this->cache->call([$this->classificationModel, 'getClassificationSources'],$apriories, $typeFlag);
 
         /* Feedback process */
         if ($postId !== null) {
@@ -76,7 +78,7 @@ class ClassificationPresenter extends Presenter
             try {
                 /* Classify keys */
                 $maxUrlsClassifiable = $this->databaseModel->getMaxPossibleClassifications();
-                $classificationResults = $this->classificationModel->classifyKeys($keys, $maxUrlsClassifiable, $apriories);
+                $classificationResults = $this->classificationModel->classifyKeys($keys, $maxUrlsClassifiable, $apriories, $typeFlag);
 
                 /* Create database entries */
                 $postId = $this->databaseModel->createPost();
@@ -119,7 +121,7 @@ class ClassificationPresenter extends Presenter
                 $this->template->classificationContainerTopGroup = reset($mostProbableGroup);
                 $this->template->maxNumberOfClassificationExceeded = $maxNumberOfClassificationExceeded;
             }
-            catch (\Throwable $ex) {
+            catch (Throwable $ex) {
                 Debugger::log($ex, ILogger::ERROR);
                 $this->flashMessage('Cannot classify your keys. Please, try later again.','danger');
             }

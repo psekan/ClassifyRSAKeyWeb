@@ -6,6 +6,7 @@ use ClassifyRSA\ClassificationModel;
 use ClassifyRSA\DatabaseModel;
 use Nette\Caching\Cache;
 use Nette\Http\FileUpload;
+use Throwable;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -33,7 +34,9 @@ class ApiPresenter extends Presenter
      * @throws \Nette\Application\AbortException
      */
     public function actionGroups() {
-        $sources = $this->cache->call([$this->classificationModel, 'getClassificationSources'],'equal');
+        $request = $this->getRequest();
+        $typeFlag = $request->getParameter('type_flag');
+        $sources = $this->cache->call([$this->classificationModel, 'getClassificationSources'],'equal', $typeFlag);
         $arr = [];
         foreach ($sources as $key => $val) {
             $arr[$key] = array_values($val);
@@ -48,6 +51,7 @@ class ApiPresenter extends Presenter
         $apriories = 'equal';
         $request = $this->getRequest();
         $keys = $request->getPost('keys');
+        $typeFlag = $request->getPost('type_flag');
         $files = $request->getFiles();
         if (!empty($files) && array_key_exists('files', $files)) {
             foreach ($files['files'] as $file) {
@@ -75,7 +79,7 @@ class ApiPresenter extends Presenter
             try {
                 /* Classify keys */
                 $maxUrlsClassifiable = $this->databaseModel->getMaxPossibleClassifications();
-                $classificationResults = $this->classificationModel->classifyKeys($keys, $maxUrlsClassifiable, $apriories);
+                $classificationResults = $this->classificationModel->classifyKeys($keys, $maxUrlsClassifiable, $apriories, $typeFlag);
 
                 /* Create database entries */
                 $postId = $this->databaseModel->createPost();
@@ -85,7 +89,7 @@ class ApiPresenter extends Presenter
                     }
                 }
             }
-            catch (\Throwable $ex) {
+            catch (Throwable $ex) {
                 Debugger::log($ex, ILogger::ERROR);
                 $this->sendJson([
                     'code' => 500,

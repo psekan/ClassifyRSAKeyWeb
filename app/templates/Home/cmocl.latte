@@ -1,0 +1,76 @@
+<h3>Continuous monitoring</h3>
+<p>
+    We continuously monitor the popularity of cryptographic libraries from large scans done by
+    <a href="https://opendata.rapid7.com/sonar.ssl/" target="_blank">Rapid7</a> and from
+    <a href="https://www.certificate-transparency.org/" target="_blank">Certificate Transparency</a>
+    Rocketeer log.
+</p>
+<div class="row pt-3">
+    <div class="col-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="r7-tab" data-toggle="tab" href="#r7" role="tab"
+                           aria-controls="r7" aria-selected="true">Rapid7 IPv4 monitor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="ct-tab" data-toggle="tab" href="#ct" role="tab"
+                           aria-controls="ct" aria-selected="false">Certificate Transparency monitor</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="r7" role="tabpanel"
+                         aria-labelledby="r7-tab">
+                        <form class="form-inline justify-content-center">
+                            <div class="input-group mb-2 mr-sm-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">From</div>
+                                </div>
+                                <select class="custom-select" id="r7-from">
+                                </select>
+                            </div>
+
+                            <div class="input-group mb-2 mr-sm-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">To</div>
+                                </div>
+                                <select class="custom-select" id="r7-to">
+                                </select>
+                            </div>
+                        </form>
+                        <p class="card-text">
+                        <div style="height: 500px;" id="rapid7_chart_div"></div>
+                        </p>
+                    </div>
+                    <div class="tab-pane fade" id="ct" role="tabpanel"
+                         aria-labelledby="ct-tab">
+                        <form class="form-inline justify-content-center">
+                            <div class="input-group mb-2 mr-sm-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">From</div>
+                                </div>
+                                <select class="custom-select" id="ct-from">
+                                </select>
+                            </div>
+
+                            <div class="input-group mb-2 mr-sm-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">To</div>
+                                </div>
+                                <select class="custom-select" id="ct-to">
+                                </select>
+                            </div>
+                        </form>
+                        <p class="card-text">
+                        <div style="height: 500px;" id="ct_chart_div"></div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

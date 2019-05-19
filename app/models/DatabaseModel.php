@@ -2,11 +2,17 @@
 namespace ClassifyRSA;
 
 use ClassifyRSA\Helpers\ClientIP;
+use ClassifyRSA\Helpers\CMoCLRecord;
+use Exception;
 use Nette\Database\Connection;
 use Nette\Database\Row;
+use Nette\Database\UniqueConstraintViolationException;
+use Tracy\Debugger;
 
 class DatabaseModel
 {
+    const API_KEY = 'api_key';
+
     /**
      * @var Connection
      */
@@ -82,4 +88,90 @@ class DatabaseModel
         return $this->classificationKeysLimit - $result["c"];
     }
 
+    /**
+     * @param CMoCLRecord $record
+     */
+    public function insertCMoCLRecord(CMoCLRecord $record) {
+        if ($this->getCMoCLRecord($record->getSource(), $record->getPeriod(), $record->getDate()) !== null) {
+            throw new UniqueConstraintViolationException("Record for this source, period and date already exists.");
+        }
+        $this->database->query('INSERT INTO `cmocl`', [
+            'source' => $record->getSource(),
+            'period' => $record->getPeriod(),
+            'date' => $record->getDate(),
+            'data' => $record->getEstimation()
+        ]);
+    }
+
+    /**
+     * @param string $source
+     * @param string $period
+     * @param string $date
+     * @return CMoCLRecord|null
+     */
+    public function getCMoCLRecord($source, $period, $date) {
+        $row = $this->database->fetch("SELECT * FROM cmocl WHERE source = ? AND period = ? AND `date` = ?;", $source, $period, $date);
+        if ($row === false) {
+            return null;
+        }
+        return new CMoCLRecord($row['source'], $row['period'], $row['date'], $row['data']);
+    }
+
+    /**
+     * @param string $source
+     * @param string $period
+     * @param string $from
+     * @param string $to
+     * @return CMoCLRecord[]
+     */
+    public function getCMoCLRecordsFromTo($source, $period, $from, $to) {
+        $rows = $this->database->query("SELECT * FROM cmocl WHERE source = ? AND period = ? AND `date` >= ? AND `date` <= ? ORDER BY `date`;", $source, $period, $from, $to);
+        $results = [];
+        foreach ($rows as $row) {
+            $results[] = new CMoCLRecord($row['source'], $row['period'], $row['date'], $row['data']);
+        }
+        return $results;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCMoCLSources() {
+        return $this->database->query("SELECT source FROM cmocl GROUP BY source ORDER BY source;")->fetchPairs(null, 'source');
+    }
+
+    /**
+     * @param string $source
+     * @param string $period
+     * @return array
+     */
+    public function getCMoCLAvailableDates($source, $period) {
+        return $this->database->query("SELECT `date` FROM cmocl WHERE source = ? AND period = ? GROUP BY `date` ORDER BY `date`;", $source, $period)->fetchPairs(null, 'date');
+    }
+
+    /**
+     * @return string|false
+     */
+    public function setNewAPIKey() {
+        try {
+            $key = base64_encode(random_bytes(16));
+            $this->database->query("DELETE FROM `setting` WHERE `key` = ?;", self::API_KEY);
+            $this->database->query('INSERT INTO `setting`', [
+                'key' => self::API_KEY,
+                'value' => $key
+            ]);
+            return $key;
+        }
+        catch (Exception $ex) {
+            Debugger::log($ex);
+            return false;
+        }
+    }
+
+    /**
+     * @return string|false
+     */
+    public function getAPIKey() {
+        return $this->database->fetchField("SELECT `value` FROM `setting` WHERE `key` = ?;", self::API_KEY);
+    }
 }

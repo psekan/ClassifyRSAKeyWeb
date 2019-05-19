@@ -189,7 +189,7 @@ class RSAKey implements \JsonSerializable {
      * @return BigInteger
      */
     public function getPart($part) {
-        switch ($part) {
+        switch (strtoupper($part)) {
             case "N":
                 return $this->getModulus();
             case "E":

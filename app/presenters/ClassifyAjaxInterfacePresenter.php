@@ -2,7 +2,7 @@
 
 namespace ClassifyRSA\Presenters;
 
-class NewInterfacePresenter extends Presenter
+class ClassifyAjaxInterfacePresenter extends Presenter
 {
     public function renderDefault() {
 

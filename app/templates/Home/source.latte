@@ -1,0 +1,38 @@
+{*{define source}*}
+    <div class="col-md-{$width} mt-3">
+        <div class="card">
+            <div class="card-header">{$name}</div>
+            <div class="card-body">
+                {ifset $publicOnly}
+                    <p>We have only public keys from this source.</p><br>
+                    <img src="img/heatmaps/modulus/{$image}" alt="{$name} - MSB Histogram" class="img-fluid">
+                {else}
+                    <img src="img/heatmaps/{$image}" alt="{$name} - Heatmap" class="img-fluid">
+                    <br><br>
+                    <img src="img/heatmaps/modulus/{$image}" alt="{$name} - MSB Histogram" class="img-fluid">
+                {/ifset}
+                <br><br>
+                <table class="table table-sm">
+                    <tbody>
+                    <tr>
+                        <th scope="row">{$type|firstUpper}</th>
+                        <td></td>
+                    </tr>
+                    <tr n:ifset="$versions">
+                        <th scope="row">Tested versions:</th>
+                        <td>{$versions|implode:', '}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Number of keys:</th>
+                        <td>{$keys|number}</td>
+                    </tr>
+                    <tr n:ifset="$link">
+                        <th scope="row">Raw keys:</th>
+                        <td><a href="{$link}">Link</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{*{/define}*}

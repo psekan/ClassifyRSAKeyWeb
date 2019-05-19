@@ -26,6 +26,12 @@ services:
     webDatabaseCommand:
         class: ClassifyRSA\WebDatabaseCommand(%dump%)
         tags: [kdyby.console.command]
+    cmoclAPIKeyCommand:
+        class: ClassifyRSA\CMoCLApiKeyCommand
+        tags: [kdyby.console.command]
+    cmoclInitCommand:
+        class: ClassifyRSA\CMoCLInitCommand
+        tags: [kdyby.console.command]
     cliGroupsCommand:
         class: ClassifyRSA\CliGroupsCommand
         tags: [kdyby.console.command]
