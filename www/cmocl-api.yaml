@@ -1,0 +1,262 @@
+openapi: "3.0.0"
+info:
+  description: "Continuous monitoring of cryptographic libraries using biased RSA keys API"
+  version: "1.0.0"
+  title: "CMoCL - RSABias"
+tags:
+  - name: Sources
+    description: Access to list of sources
+  - name: Dates
+    description: List of available dates
+  - name: Records
+    description: Estimation records manipulation
+paths:
+  /api/cmocl/{source}/{period}:
+    get:
+      description: Get available dates from source and period
+      tags:
+        - Dates
+      parameters:
+        - name: source
+          in: path
+          description: Name of estimation source.
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Period'
+      responses:
+        '200':
+          description: list of available dates from source (and period) in the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: date
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/cmocl/{source}/{period}/{date}:
+    get:
+      description: Get specific record
+      tags:
+        - Records
+      parameters:
+        - name: source
+          in: path
+          description: Name of estimation source.
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Period'
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: date 
+      responses:
+        '200':
+          description: a record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Record'
+        '404':
+          description: record not found
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/cmocl/{source}/{period}/{from}/{to}:
+    get:
+      description: Get record from source and period between dates from and to (inclusive).
+      tags:
+        - Records
+      parameters:
+        - name: source
+          in: path
+          description: Name of estimation source.
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Period'
+        - name: from
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: date 
+        - name: to
+          in: path
+          required: true
+          schema:
+            type: string 
+            format: date 
+      responses:
+        '200':
+          description: list of records from source (and period) between dates in the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Record'
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/cmocl/:
+    get:
+      description: Get list of all available sources
+      tags:
+        - Sources
+      responses:
+        '200':
+          description: list of all available sources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Add a new estimation record to the database.
+      tags:
+        - Records
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Record'
+      responses:
+        '204':
+          description: record added
+        '400':
+          description: not correct format of record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: authorization failed
+        '409':
+          description: such record already exists
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: string 
+  schemas:
+    Period:
+      type: string  
+      enum: 
+        - day
+        - week
+        - month
+        - occasional
+    Record:
+      required:
+        - source
+        - period
+        - date 
+        - estimation
+      properties:
+        source:
+          type: string
+          description: Name of estimation source.
+          example: Rapid7
+        period:
+          $ref: '#/components/schemas/Period'
+        date:
+          type: string 
+          format: date 
+        estimation:
+          $ref: '#/components/schemas/Estimation'
+    Estimation:
+      required:
+        - probability
+        - groups
+        - frequencies 
+      properties:
+        probability:
+          type: object
+          properties:
+            "Group 1":
+              type: string
+          additionalProperties: 
+            type: string
+          minProperties: 1
+          example:
+            Group 1: "0.78123141762"
+            Group 2: "0.20308130125"
+            Group 3: "0.01568711291"
+        groups:
+          type: object
+          properties:
+            "Group 1":
+              type: array
+              items: 
+                type: string
+          additionalProperties: 
+            type: array
+            items: 
+              type: string
+          minProperties: 1
+          example:
+            Group 1: [OpenSSL]
+            Group 2: [Microsoft CNG & .NET & CryptoAPI, Crypto++ <=5.6.5, Bouncy Castle 1.54]
+            Group 3: [Nettle <=3.3]
+        frequencies:
+          additionalProperties: 
+            type: integer
+          minProperties: 1  
+          example:
+            "0|2|0|111000": 321
+            "1|2|1|001110": 1
+            "0|1|0|010010": 8964
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string

@@ -1,0 +1,130 @@
+openapi: "3.0.0"
+info:
+  description: "API for classification a small number of RSA public keys."
+  version: "1.0.0"
+  title: "Classification API - RSABias"
+tags:
+  - name: Groups
+    description: Access to list of groups and sources
+  - name: Classification
+    description: Service for classification a small number of keys
+paths:
+  /api/groups/:
+    get:
+      description: Get list of groups and theirs sources from the classification table.
+      tags:
+        - Groups
+      parameters:
+        - name: type_flag
+          in: query
+          description: Determine if we want to obtain only software, hardware or both types of sources.
+          schema:
+            $ref: '#/components/schemas/Types'
+      responses:
+        '200':
+          description: list of groups and their sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Groups'
+        '500':
+          description: unexpected error
+  /api/classify/:
+    post:
+      description: Clasify submitted keys
+      tags:
+        - Classification
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                type_flag:
+                  type: string
+                keys:
+                  type: string
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Classification results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultsInfo'
+        '500':
+          description: unexpected error
+components:
+  schemas:
+    Types:
+      type: string  
+      enum: 
+        - sw
+        - hw
+        - both
+    Groups:
+      type: object
+      properties:
+        "I":
+          type: array
+          items: 
+            type: string
+      additionalProperties: 
+        type: array
+        items: 
+          type: string
+      minProperties: 1
+      example:
+        I: [OpenSSL]
+        II: [Microsoft CNG & .NET & CryptoAPI, Crypto++ <=5.6.5, Bouncy Castle 1.54]
+        III: [Nettle <=3.3]
+    ResultsInfo:
+      properties:
+        classifiedKeys:
+          type: array
+          description: Name of estimation source.
+          items:
+            $ref: '#/components/schemas/KeyResult'
+        containerResults:
+          $ref: '#/components/schemas/ContainerResult'
+        correctKeys:
+          type: integer 
+        duplicateKeys:
+          type: integer 
+        uniqueKeys:
+          type: integer
+        maxNumberOfClassificationExceeded:
+          type: boolean
+    KeyResult:
+      type: object
+      properties:
+        duplicated:
+          type: boolean
+        identification:
+          type: string
+        mostAnonymous:
+          type: boolean
+        orderedResults:
+          $ref: '#/components/schemas/ContainerResult'
+        rsaKey:
+          type: object
+          properties:
+            exponent: 
+              type: integer
+            modulusBitLen:
+              type: integer
+    ContainerResult:
+      type: array
+      items:
+        type: object
+        properties:
+          group:
+            type: string
+            description: index of group
+          value:
+            type: string
+            description: decimal number between 0 and 1 as a probability

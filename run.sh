@@ -7,6 +7,7 @@ httpd -D FOREGROUND &
 cat << EOF > /cmocl-key
 #!/bin/sh
 php /var/www/localhost/cli.php cmocl:key
+chown apache:apache -R /var/www/localhost/temp/
 EOF
 chmod u+x /cmocl-key
 
