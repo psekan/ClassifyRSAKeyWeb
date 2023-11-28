@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.15
 MAINTAINER peter.sekan11@gmail.com
 
 ENV TIMEZONE Europe/Prague
