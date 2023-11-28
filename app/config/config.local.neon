@@ -1,5 +1,5 @@
 database:
-    dsn: 'mysql:host=127.0.0.1;dbname=rsa'
+    dsn: 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=rsa'
     user: root
     password: changeMe
 
